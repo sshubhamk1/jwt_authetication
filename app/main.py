@@ -7,13 +7,23 @@ key ="this is a secret key for encryption"
 @app.route('/')
 def index():
     return("<b>Welcome, send post request <a href='/login'>here</a> to check api")
-@app.route("/login", methods=["POST"])
+@app.route("/login/", methods=["POST","GET"])
 def login():
-    if not (request.form['email'] and request.form['password']):
-        return("<b>pass email and password</b>")
-    auth = jwt.encode({"auth":request.form['email'],"email":request.form['password']},key, algorithm="HS256")
+    email ="dummy@email"
+    password= "dummy password"
+    if request.method == "POST":
+        if request.form['email']:
+            email = request.form['email']
+        if request.form['password']:
+            password = request.form['password']
+    else:
+        if request.args.get('email'):
+            email = request.args.get('email')
+        if request.args.get('password'):
+            password = request.args.get('password')
+    auth = jwt.encode({"email":email,"password":password},key, algorithm="HS256")
     value = auth.decode('utf-8')
-    return("Authentication code is <p><b>{}</b></p>".format(value))
+    return("<p>Authentication code is <br><b>{}</b><br>email:{}<br>password:{}</p> see it in verify as <a href='../verify?code={}'>here</a>".format(value,email,password,value))
 
 @app.route('/verify')
 def verify():
@@ -25,4 +35,4 @@ def verify():
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT',5000))
-    app.run(port=port)
+    app.run(port=port,debug=True)
