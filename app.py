@@ -1,5 +1,6 @@
 from flask import Flask,request
 import jwt
+import os
 
 app = Flask(__name__)
 key ="this is a secret key for encryption"
@@ -23,4 +24,5 @@ def verify():
 
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get('PORT',5000))
+    app.run(port=port)
